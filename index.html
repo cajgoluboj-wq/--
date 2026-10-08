@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Письмо для тебя 💌</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    padding: 20px;
+  }
+
+  /* Конверт / письмо */
+  .envelope {
+    background: #fffaf5;
+    border-radius: 16px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(180, 80, 110, 0.35);
+    position: relative;
+    z-index: 2;
+    animation: floatIn 0.8s ease;
+  }
+
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .heart-top {
+    font-size: 48px;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #b3405e;
+    margin: 16px 0 12px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #7a5a63;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 17px;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.25s, background 0.25s;
+  }
+
+  .yes-btn {
+    background: linear-gradient(135deg, #ff6b8b, #e63963);
+    color: white;
+    box-shadow: 0 8px 20px rgba(230, 57, 99, 0.4);
+  }
+
+  .yes-btn:hover { transform: scale(1.08); }
+
+  .no-btn {
+    background: #f0e4e7;
+    color: #9c7680;
+    position: relative;
+  }
+
+  /* Экран после нажатия "Да" */
+  .final {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+    z-index: 5;
+  }
+
+  .final.show { display: flex; animation: floatIn 0.7s ease; }
+
+  .final h2 {
+    font-size: 30px;
+    color: #fff;
+    text-shadow: 0 4px 20px rgba(180, 40, 80, 0.5);
+    margin-bottom: 14px;
+  }
+
+  .final p {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 0;
+  }
+
+  .big-heart {
+    font-size: 90px;
+    animation: pulse 1s infinite;
+    margin-bottom: 20px;
+  }
+
+  /* Летящие сердечки */
+  .flying-heart {
+    position: fixed;
+    bottom: -40px;
+    font-size: 28px;
+    pointer-events: none;
+    z-index: 10;
+    animation: flyUp 3s ease-in forwards;
+  }
+
+  @keyframes flyUp {
+    0%   { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-110vh) scale(0.4) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Письмо -->
+  <div class="envelope" id="envelope">
+    <div class="heart-top">💌</div>
+    <h1>У меня к тебе вопрос...</h1>
+    <p>Ты будешь моей Валентинкой?<br>Обещаю, будет весело 🥰</p>
+    <div class="buttons">
+      <button class="yes-btn" onclick="sayYes()">Да! 💖</button>
+      <button class="no-btn" id="noBtn" onmouseover="runAway()" onclick="runAway()">Нет...</button>
+    </div>
+  </div>
+
+  <!-- Финальный экран -->
+  <div class="final" id="final">
+    <div class="big-heart">❤️</div>
+    <h2>Я так и знал(а)! 🎉</h2>
+    <p>Ты сделал(а) меня самым счастливым человеком!</p>
+  </div>
+
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const texts = ['Нет...', 'Точно нет?', 'Подумай ещё 🤔', 'Не-а 😜', 'Последний шанс!', 'Ну пожалуйста 🥺'];
+  let count = 0;
+
+  // Кнопка "Нет" убегает и меняет текст
+  function runAway() {
+    count++;
+    const x = Math.random() * (window.innerWidth - 150);
+    const y = Math.random() * (window.innerHeight - 80);
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top = y + 'px';
+    noBtn.textContent = texts[count % texts.length];
+    noBtn.style.fontSize = Math.max(12, 17 - count) + 'px';
+  }
+
+  // Нажатие "Да"
+  function sayYes() {
+    document.getElementById('envelope').style.display = 'none';
+    document.getElementById('final').classList.add('show');
+    createHearts();
+  }
+
+  // Взрыв сердечек
+  function createHearts() {
+    const emojis = ['❤️', '💖', '💕', '💗', '💓', '💝', '🌸'];
+    setInterval(() => {
+      const heart = document.createElement('div');
+      heart.className = 'flying-heart';
+      heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+      heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }, 150);
+  }
+</script>
+</body>
+</html>
